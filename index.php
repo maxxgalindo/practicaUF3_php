@@ -7,6 +7,13 @@
 </head>
 <body>
 
+<?php
+if(isset($_GET['error'])){
+    echo $_GET['error'];
+}
+
+?>
+
 <form method="post" action="action.php">
     Name: <input type="text" name="name" required/></br>
     Category: <input type="text" name="category"/></br>
@@ -27,6 +34,8 @@
 </form>  
 
 <?php
+
+
 
 //TESTING CHECKBOX
 if(isset($_POST['submit']) && !empty($_POST['types'])) {

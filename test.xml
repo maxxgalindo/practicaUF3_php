@@ -1,0 +1,2 @@
+<?xml version="1.0"?>
+<pokemon><name>Bulbasaur</name><category>Seed</category><height>2</height><weight>15</weight><types type="array"><value>grass</value></types><evolutions><first>Bulbasaur</first><second>Ivysaur</second><third>Venusaur</third></evolutions></pokemon>

@@ -31,7 +31,7 @@ if(isset($_GET['error'])){
     <input type="submit" name = "save" value ="SAVE"/></br>
     <input type="submit" name = "load" value="LOAD"/></br>
 
-</form>  
+</form>
 
 <?php
 
@@ -48,6 +48,6 @@ if(isset($_POST['submit']) && !empty($_POST['types'])) {
 
 
 ?>
-    
+
 </body>
 </html>

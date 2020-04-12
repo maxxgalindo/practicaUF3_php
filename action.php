@@ -50,6 +50,25 @@
     // closeConn($conn);
 
   }elseif (isset($_POST['load'])) {
-    // code...
+
+    $conn = openConn('pokedex');
+
+    $query = $conn->query("SELECT xml FROM pokemon WHERE xmlexists('//pokemon[./name=\"".$_POST['name']."\"]' PASSING BY REF xml);");
+    $result = $query->fetch(PDO::FETCH_ASSOC)['xml'];
+
+    $xml = new SimpleXMLElement($result);
+    echo '<form name="fr" action="index.php" method="POST">';
+    echo '<input type="text" name="name" value="'.$xml->xpath('//name')[0].'"/>';
+    echo '<input type="text" name="category" value="'.$xml->xpath('//category')[0].'"/>';
+    echo '<input type="number" name="height" value="'.$xml->xpath('//height')[0].'"/>';
+    echo '<input type="number" name="weight" value="'.$xml->xpath('//weight')[0].'"/>';
+    foreach ($xml->xpath('//types/value') as $type) {
+      echo '<input type="text" name="types[]" value="'.$type.'"/>';
+    }
+    echo '<input type="text" name="evo1" value="'.$xml->xpath('//evolutions/first')[0].'"/>';
+    echo '<input type="text" name="evo2" value="'.$xml->xpath('//evolutions/second')[0].'"/>';
+    echo '<input type="text" name="evo3" value="'.$xml->xpath('//evolutions/third')[0].'"/>';
+    echo '</form>';
+    echo '<script type="text/javascript">document.fr.submit();</script>';
   }
 ?>

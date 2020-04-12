@@ -3,8 +3,8 @@
 function openConn($db)
 {
   $server = 'localhost';
-  $userName = 'postgres';
-  $password = 'postgres';
+  $userName = 'openpg';
+  $password = 'openpgpwd';
 
   try{
     $conn = new PDO('pgsql:host='.$server.';dbname='.$db, $userName, $password);

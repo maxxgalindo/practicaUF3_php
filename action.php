@@ -2,6 +2,7 @@
   require('db_conn.php');
 
   if (isset($_POST['save'])) {
+
     if (!isset($_POST['category']) ||
       !isset($_POST['height']) ||
       !isset($_POST['weight']) ||
@@ -12,6 +13,20 @@
     ) {
       header('Location: index.php?error=empty_fields');
       die();
+    }
+
+    $conn = openConn('pokedex');
+    
+    $query = $conn->query("SELECT xmlexists('//pokemon[./name=\"".$_POST['name']."\"]' PASSING BY REF xml) as existing FROM pokemon");
+    $result = $query->fetchAll(PDO::FETCH_ASSOC);
+
+    
+
+    foreach($result as $pokemon){
+      if($pokemon['existing']){
+        header('Location: index.php?error=already_exists');
+      die();
+      }
     }
 
     $dom = new DOMDocument();
@@ -40,24 +55,26 @@
     $pokemon->appendChild($evolution);
 
     $dom->appendChild($pokemon);
-    // $dom->save('test.xml');
 
-    $conn = openConn('pokedex');
 
     $stm = $conn->prepare('INSERT INTO pokemon (xml) VALUES (:xml)');
     $stm->execute(array(':xml'=>$dom->saveXML()));
 
     // closeConn($conn);
 
+   header("Location: index.php");
+   die();
+
   }elseif (isset($_POST['load'])) {
 
+  
     $conn = openConn('pokedex');
 
     $query = $conn->query("SELECT xml FROM pokemon WHERE xmlexists('//pokemon[./name=\"".$_POST['name']."\"]' PASSING BY REF xml);");
     $result = $query->fetch(PDO::FETCH_ASSOC)['xml'];
 
     $xml = new SimpleXMLElement($result);
-    echo '<form name="fr" action="index.php" method="POST">';
+    echo '<form name="fr" action="index.php" method="POST" hidden>';
     echo '<input type="text" name="name" value="'.$xml->xpath('//name')[0].'"/>';
     echo '<input type="text" name="category" value="'.$xml->xpath('//category')[0].'"/>';
     echo '<input type="number" name="height" value="'.$xml->xpath('//height')[0].'"/>';

@@ -16,25 +16,56 @@
     }
 
    body{
-        
+
             background-color:#212529;
             margin: 10px;
             color:white;
-            
+
      }
-    
+
 </style>
 <body>
 
 <?php
 if(isset($_GET['error'])){
-    echo $_GET['error'];
+    switch ($_GET['error']) {
+      case 'empty_fields':
+        echo "<script>alert('Fill all fields')</script>";
+        break;
+
+      case 'already_exists':
+        echo "<script>alert('This pokemon already exists')</script>";
+        break;
+
+      case 'query_error':
+        echo "<script>alert('Invalid xpath query')</script>";
+        break;
+
+      default:
+        echo "<script>alert('Something went wrong')</script>";
+        break;
+    }
 }
+
+if (isset($_POST['xpath'])) {
+  $query = "SELECT id,xml FROM pokemon WHERE xmlexists('//pokemon[".$_POST['xpath']."]' PASSING BY REF xml);";
+}else {
+  $query = "SELECT id,xml FROM pokemon;";
+}
+
 include('list.php');
 
 ?>
 
-<div style="width: 45%;float:left;">
+<div style="width: 48%;float:left;">
+
+<div style="margin-bottom:5px">
+  <form class="form-inline my-2 my-lg-0" action="index.php" method="post">
+    <input class="form-control mr-sm-2" type="search" placeholder="//pokemon[...] | eg.: attribute = value" name="xpath" aria-label="Search" style="width:85%">
+    <button class="btn btn-outline-success my-2 my-sm-0" type="submit" style="width:10%">Search</button>
+  </form>
+</div>
+
 <table class="table table-hover table-dark">
   <thead>
     <tr>
@@ -44,12 +75,13 @@ include('list.php');
     </tr>
   </thead>
   <tbody>
-  
+
     <?php foreach($pokemons as $id => $pokemon):?>
     <tr onclick="loadData('<?php echo $pokemon->xpath('//name')[0];?>')">
       <th scope="row"><?php echo $id ?></th>
       <td><?php echo $pokemon->xpath('//name')[0];?></td>
       <td><?php echo $pokemon->xpath('//category')[0];?></td>
+      <td><a href="action.php?delete=<?php echo $id; ?>" type="button" class="btn btn-danger"><img src="trash.png" style="width:1.5em;height:auto;"></a></td>
     </tr>
     <?php endforeach;?>
   </tbody>
@@ -57,7 +89,7 @@ include('list.php');
 
 </div>
 
-<div style="width:45%;float:right;">
+<div style="width:48%;float:right;">
 <form method="post" action="action.php">
 <div class="form-group">
 <label for="name">Name</label>
@@ -103,30 +135,32 @@ include('list.php');
 <label class="form-check-label" for="normal">Normal</label>
 </div>
 
-    
+
     </br><h3>Evolutions</h3>
 
     <div class="form-group">
- <label for="first">First: </label>
+ <label for="first">First</label>
  <input type="text" id="first" class="form-control" name="evo1" value="<?php if(isset($_POST['evo1'])){ echo $_POST['evo1'];}?>"/></br>
  </div>
 
- 
+
  <div class="form-group">
- <label for="second">Second: </label>
+ <label for="second">Second</label>
  <input type="text" id="second" class="form-control" name="evo2" value="<?php if(isset($_POST['evo2'])){ echo $_POST['evo2'];}?>"/></br>
  </div>
 
- 
+
  <div class="form-group">
- <label for="third">Third: </label>
+ <label for="third">Third</label>
  <input type="text" id="third" class="form-control" name="evo3" value="<?php if(isset($_POST['evo3'])){ echo $_POST['evo3'];}?>"/></br>
  </div>
 
-    
+ <h5>Creation Date: </h5><label><?php if(isset($_POST['date'])){ echo $_POST['date']; } ?></label><br/><br/>
+
+
     <input type="submit" class="btn btn-dark" name = "save" value ="SAVE"/>&nbsp;&nbsp;
     <input type="submit" class="btn btn-dark" name = "load" value="LOAD"/></br>
-</div>
+
 </form>
 </div>
 
@@ -153,7 +187,7 @@ if(isset($_POST['submit']) && !empty($_POST['types'])) {
 <script>
     function loadData(name){
 
-        
+
 
         var form = document.createElement("form");
         form.setAttribute("method","post");
@@ -171,7 +205,7 @@ if(isset($_POST['submit']) && !empty($_POST['types'])) {
         submit.setAttribute("type","submit");
         submit.setAttribute("name","load");
         submit.setAttribute("value","LOAD");
-        
+
         form.appendChild(input);
         form.appendChild(submit);
         document.body.appendChild(form);

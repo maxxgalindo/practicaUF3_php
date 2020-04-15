@@ -4,9 +4,14 @@ require('db_conn.php');
 
 $conn = openConn('pokedex');
 
-$query = $conn->query("SELECT id,xml FROM pokemon;");
-$result = $query->fetchAll(PDO::FETCH_ASSOC);
-$pokemons = [];
+try {
+  $stm = $conn->query($query);
+  $result = $stm->fetchAll(PDO::FETCH_ASSOC);
+  $pokemons = [];
+} catch (\Exception $e) {
+  header("Location: index.php?error=query_error");
+  die();
+}
 
 foreach($result as $pokemon_info){
 $id = $pokemon_info['id'];
